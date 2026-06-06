@@ -40,6 +40,7 @@ pip install -r requirements.txt
 - `dancehall.py` — Dancehall riddim with bass line, loops indefinitely
 - `dubstep.py` — Hardcore dubstep with buildup, breakdown, and drop sections
 - `dub.py` — Dub pattern with siren sweeps via pitch bend (assign siren supertone to pad first)
+- `dub_95.py` — 95 BPM 32-bar AABA reggae dub instrumental with sparse one-drop drums, deep bass, and echo-style atmospheric repeats
 - `stutter_dub.py` — Minimal stutter dub at 66 BPM with bass wobble via pitch bend
 - `glitch.py` — Slow experimental glitch at 55 BPM, evolving euclidean rhythms, sparse and alien
 - `rnb.py` — 70s R&B at 72 BPM, Cm7/Fm7/Bbmaj7/Ebmaj7 progression with sweet melody and high twinkle
