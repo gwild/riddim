@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stream AudioBox 1818VSL input 8 to Icecast /riddim.mp3 via GStreamer."""
+"""Stream AudioBox 1818VSL inputs 7/8 to Icecast /riddim.mp3 via GStreamer."""
 
 import base64
 import http.client
@@ -16,7 +16,8 @@ DEFAULT_GST_ROOT = Path("/tmp/gstreamer-osx/runtime")
 DEFAULT_PLUGIN_DIR = Path("/tmp/gstreamer-osx/minplugins")
 DEFAULT_MOUNT = "/riddim.mp3"
 DEFAULT_DEVICE = 84
-DEFAULT_CHANNEL = 8
+DEFAULT_LEFT_CHANNEL = 7
+DEFAULT_RIGHT_CHANNEL = 8
 READ_SIZE = 8192
 
 
@@ -54,33 +55,44 @@ def gst_env(root, plugin_dir):
     return env
 
 
-def gst_cmd(root, device, channel):
-    pad = channel - 1
+def select_matrix(input_channels, left_channel, right_channel):
+    def row(selected_channel):
+        values = ["0.0"] * input_channels
+        values[selected_channel - 1] = "1.0"
+        return "< " + ", ".join(values) + " >"
+
+    return "< " + ", ".join([row(left_channel), row(right_channel)]) + " >"
+
+
+def gst_cmd(root, device, left_channel, right_channel):
+    input_channels = 18
+    matrix = select_matrix(input_channels, left_channel, right_channel)
     return [
         str(root / "bin/gst-launch-1.0"),
         "-q",
         "osxaudiosrc",
         f"device={device}",
         "!",
-        "audio/x-raw,rate=48000,channels=18",
-        "!",
-        "deinterleave",
-        "name=d",
-        f"d.src_{pad}",
-        "!",
-        "queue",
+        f"audio/x-raw,rate=48000,channels={input_channels},layout=interleaved",
         "!",
         "audioconvert",
         "!",
-        "audioresample",
+        f"audio/x-raw,format=F32LE,channels={input_channels},rate=48000,layout=interleaved",
         "!",
-        "audio/x-raw,format=S16LE,channels=1,rate=48000",
+        "audiomixmatrix",
+        f"in-channels={input_channels}",
+        "out-channels=2",
+        "channel-mask=3",
+        f"matrix={matrix}",
+        "!",
+        "audioconvert",
+        "!",
+        "audio/x-raw,format=S16LE,layout=interleaved,channels=2,rate=48000",
         "!",
         "lamemp3enc",
         "target=bitrate",
-        "bitrate=128",
+        "bitrate=192",
         "cbr=true",
-        "mono=true",
         "!",
         "fdsink",
         "fd=1",
@@ -94,7 +106,7 @@ def send_chunked(conn, chunk):
     conn.send(b"\r\n")
 
 
-def stream_once(env_path, gst_root, plugin_dir, device, channel, mount):
+def stream_once(env_path, gst_root, plugin_dir, device, left_channel, right_channel, mount):
     values = load_env(env_path)
     host = require(values, "LAN_ICECAST_HOST")
     port = int(require(values, "ICECAST_PORT"))
@@ -103,7 +115,7 @@ def stream_once(env_path, gst_root, plugin_dir, device, channel, mount):
     mount = mount if mount.startswith("/") else f"/{mount}"
 
     proc = subprocess.Popen(
-        gst_cmd(gst_root, device, channel),
+        gst_cmd(gst_root, device, left_channel, right_channel),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         env=gst_env(gst_root, plugin_dir),
@@ -123,7 +135,10 @@ def stream_once(env_path, gst_root, plugin_dir, device, channel, mount):
     conn.putheader("Transfer-Encoding", "chunked")
     conn.endheaders()
 
-    print(f"Streaming AudioBox device {device} channel {channel} to http://{host}:{port}{mount}")
+    print(
+        f"Streaming AudioBox device {device} channels {left_channel}/{right_channel} "
+        f"to http://{host}:{port}{mount}"
+    )
     assert proc.stdout is not None
     try:
         while True:
@@ -151,12 +166,13 @@ def main():
     gst_root = Path(os.environ.get("RHYTHM_GST_ROOT", DEFAULT_GST_ROOT))
     plugin_dir = Path(os.environ.get("RHYTHM_GST_PLUGIN_DIR", DEFAULT_PLUGIN_DIR))
     device = int(os.environ.get("RHYTHM_GST_DEVICE", DEFAULT_DEVICE))
-    channel = int(os.environ.get("RHYTHM_GST_CHANNEL", DEFAULT_CHANNEL))
+    left_channel = int(os.environ.get("RHYTHM_GST_LEFT_CHANNEL", DEFAULT_LEFT_CHANNEL))
+    right_channel = int(os.environ.get("RHYTHM_GST_RIGHT_CHANNEL", DEFAULT_RIGHT_CHANNEL))
     mount = os.environ.get("RHYTHM_MOUNT", DEFAULT_MOUNT)
 
     while True:
         try:
-            stream_once(env_path, gst_root, plugin_dir, device, channel, mount)
+            stream_once(env_path, gst_root, plugin_dir, device, left_channel, right_channel, mount)
         except KeyboardInterrupt:
             raise
         except Exception as exc:

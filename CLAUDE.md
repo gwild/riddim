@@ -46,6 +46,7 @@ pip install -r requirements.txt
 - `chuck_sync.py` — 120 BPM 8-bar riddim designed to lock with the ChucK jam transport
 - `chuck_sync_16.py` — 120 BPM 16-bar ChucK-synced riddim with a longer developing form
 - `chuck_sync_32_aaba.py` — 120 BPM 32-bar AABA ChucK-synced riddim
+- `rhythm_stream.py` — Stereo Icecast stream from AudioBox 1818VSL inputs 7/8 to `/riddim.mp3`
 
 ### Note 55 Warning
 Note 55 (Group B pad 5) may have a dub siren supertone assigned. Scripts avoid this note for bass/melody.
