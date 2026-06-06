@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Dancehall riddim pattern with bass on the EP-40."""
 
-import rtmidi
 import time
+
+from midi_port import open_midi_out
 
 # Group A - drums
 KICK = 36
@@ -46,8 +47,7 @@ DRUM_VEL = 100
 DRUM_NOTE_LEN = 0.04
 BASS_NOTE_LEN = 0.12
 
-midiout = rtmidi.MidiOut()
-midiout.open_port(1)  # EP-40
+midiout = open_midi_out()
 
 bar = 0
 print(f"Dancehall riddim — looping at {BPM} BPM — Ctrl+C to stop")

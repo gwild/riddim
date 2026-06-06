@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Minimal stutter dub with low bass wobble — 66 BPM."""
 
-import rtmidi
 import time
 import math
+
+from midi_port import open_midi_out
 
 # Group A - drums
 KICK = 36
@@ -93,8 +94,7 @@ def bass_wobble(midiout, duration, depth=2000, rate=2.5):
     send_pitch_bend(midiout, 0)
 
 
-midiout = rtmidi.MidiOut()
-midiout.open_port(1)
+midiout = open_midi_out()
 
 print(f"STUTTER DUB — {BPM} BPM — Ctrl+C to stop")
 

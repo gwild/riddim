@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Hardcore dubstep pattern with a massive breakdown on the EP-40."""
 
-import rtmidi
 import time
 import random
+
+from midi_port import open_midi_out
 
 # Group A - drums
 KICK = 36
@@ -156,8 +157,7 @@ def play_pattern(midiout, drums, bass, stabs=None, bars=4, label=""):
         midiout.send_message([0x80, prev_stab, 0])
 
 
-midiout = rtmidi.MidiOut()
-midiout.open_port(1)
+midiout = open_midi_out()
 
 print(f"DUBSTEP — {BPM} BPM — Ctrl+C to stop")
 

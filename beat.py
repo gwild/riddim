@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Send a basic reggae/dancehall beat pattern to the EP-40 Riddim."""
 
-import rtmidi
 import time
+
+from midi_port import open_midi_out
 
 # EP-40 MIDI Note Map
 # Group A (36-47): pads 0-9, enter, period
@@ -33,8 +34,7 @@ pattern = {
 VELOCITY = 100
 NOTE_LENGTH = 0.05  # short trigger
 
-midiout = rtmidi.MidiOut()
-midiout.open_port(1)  # EP-40
+midiout = open_midi_out()
 
 loops = 4
 print(f"Playing {loops} bars at {BPM} BPM — Ctrl+C to stop")

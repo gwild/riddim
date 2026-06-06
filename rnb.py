@@ -5,8 +5,9 @@ Warm drums, mellow bass, sweet melody lines.
 Avoids note 55 (siren supertone).
 """
 
-import rtmidi
 import time
+
+from midi_port import open_midi_out
 
 # Group A - drums (36-47)
 KICK = 36
@@ -110,8 +111,7 @@ high_bars = [
      (D_Eb, 35), None, None, None],
 ]
 
-midiout = rtmidi.MidiOut()
-midiout.open_port(1)
+midiout = open_midi_out()
 
 print(f"70s R&B — {BPM} BPM — Cm7 / Fm7 / Bbmaj7 / Ebmaj7 — Ctrl+C to stop")
 

@@ -4,13 +4,15 @@ MIDI control scripts for the Teenage Engineering EP-40 Riddim.
 
 ## Setup
 
-- Python 3.13 venv at `.venv/`
-- Dependencies: `mido`, `python-rtmidi`
-- EP-40 connects via USB-C, appears as `"EP-40"` on MIDI port index 1
+- Python 3 venv at `.venv/`
+- Dependencies listed in `requirements.txt`
+- EP-40 connects via USB-C or DIN MIDI through an interface
+- Scripts prefer `EP-40`, `Riddim`, `Teenage`, then `AudioBox 1818 VSL`; set `RIDDIM_MIDI_PORT` to a port index or name fragment to override
 
 ```bash
+python3 -m venv .venv
 source .venv/bin/activate
-pip install mido python-rtmidi
+pip install -r requirements.txt
 ```
 
 ## EP-40 MIDI Reference

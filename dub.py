@@ -7,9 +7,10 @@ Default assumes Group B pad 5 (MIDI note 55). Change SIREN below if different.
 The siren sweep uses pitch bend messages to simulate the wail.
 """
 
-import rtmidi
 import time
 import math
+
+from midi_port import open_midi_out
 
 # ---- CONFIG ----
 SIREN = 55          # Group B pad 5 — change to match your siren pad
@@ -102,8 +103,7 @@ def play_siren_sweep(midiout, duration=2.0, note=SIREN, vel=SIREN_VEL):
     send_pitch_bend(midiout, 0)
 
 
-midiout = rtmidi.MidiOut()
-midiout.open_port(1)  # EP-40
+midiout = open_midi_out()
 
 print(f"DUB — {BPM} BPM — siren on note {SIREN} — Ctrl+C to stop")
 print(f"  Assign a dub siren supertone to the pad for note {SIREN} on the EP-40")

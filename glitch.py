@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Slow experimental glitch — sparse, evolving, alien dub."""
 
-import rtmidi
 import time
 import math
 import random
+
+from midi_port import open_midi_out
 
 KICK = 36
 SNARE = 38
@@ -39,8 +40,7 @@ def euclidean(hits, steps):
     return pattern
 
 
-midiout = rtmidi.MidiOut()
-midiout.open_port(1)
+midiout = open_midi_out()
 
 print(f"SLOW GLITCH — {BPM} BPM — Ctrl+C to stop")
 
