@@ -37,6 +37,8 @@ pip install mido python-rtmidi
 - `beat.py` — Basic beat pattern (configurable BPM/loops)
 - `dancehall.py` — Dancehall riddim with bass line, loops indefinitely
 - `dubstep.py` — Hardcore dubstep with buildup, breakdown, and drop sections
+- `dub.py` — Dub pattern with siren sweeps via pitch bend (assign siren supertone to pad first)
+- `stutter_dub.py` — Minimal stutter dub at 66 BPM with bass wobble via pitch bend
 
 All scripts use `rtmidi` directly. Ctrl+C to stop looping scripts.
 
