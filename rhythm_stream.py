@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stream AudioBox 1818VSL input 8 to Icecast /rhythm.mp3 via GStreamer."""
+"""Stream AudioBox 1818VSL input 8 to Icecast /riddim.mp3 via GStreamer."""
 
 import base64
 import http.client
@@ -14,7 +14,7 @@ from pathlib import Path
 DEFAULT_ENV = Path("/Users/gregory/milton-locke/.env")
 DEFAULT_GST_ROOT = Path("/tmp/gstreamer-osx/runtime")
 DEFAULT_PLUGIN_DIR = Path("/tmp/gstreamer-osx/minplugins")
-DEFAULT_MOUNT = "/rhythm.mp3"
+DEFAULT_MOUNT = "/riddim.mp3"
 DEFAULT_DEVICE = 84
 DEFAULT_CHANNEL = 8
 READ_SIZE = 8192
