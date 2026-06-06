@@ -197,6 +197,10 @@ def send_pitch_bend(midiout, value, channel=0):
 
 
 def all_notes_off(midiout):
+    midiout.send_message([0xFC])  # MIDI transport stop, in case the EP-40 sequencer is running.
+    for channel in range(16):
+        midiout.send_message([0xB0 | channel, 120, 0])  # all sound off
+        midiout.send_message([0xB0 | channel, 123, 0])  # all notes off
     for note in range(36, 84):
         note_off(midiout, note)
     send_pitch_bend(midiout, 0)
