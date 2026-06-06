@@ -100,12 +100,6 @@ def gst_cmd(root, device, left_channel, right_channel):
     ]
 
 
-def send_chunked(conn, chunk):
-    conn.send(f"{len(chunk):X}\r\n".encode("ascii"))
-    conn.send(chunk)
-    conn.send(b"\r\n")
-
-
 def stream_once(env_path, gst_root, plugin_dir, device, left_channel, right_channel, mount):
     values = load_env(env_path)
     host = require(values, "LAN_ICECAST_HOST")
@@ -132,7 +126,6 @@ def stream_once(env_path, gst_root, plugin_dir, device, left_channel, right_chan
     conn.putheader("Ice-Description", "Locke EP-40 Riddim")
     conn.putheader("Ice-Genre", "riddim")
     conn.putheader("Ice-Public", "0")
-    conn.putheader("Transfer-Encoding", "chunked")
     conn.endheaders()
 
     print(
@@ -148,7 +141,7 @@ def stream_once(env_path, gst_root, plugin_dir, device, left_channel, right_chan
                 if proc.stderr is not None:
                     stderr = proc.stderr.read(4096)
                 raise RuntimeError(f"GStreamer ended: {stderr.decode(errors='replace')}")
-            send_chunked(conn, chunk)
+            conn.send(chunk)
     finally:
         try:
             conn.close()
