@@ -43,6 +43,7 @@ pip install -r requirements.txt
 - `stutter_dub.py` — Minimal stutter dub at 66 BPM with bass wobble via pitch bend
 - `glitch.py` — Slow experimental glitch at 55 BPM, evolving euclidean rhythms, sparse and alien
 - `rnb.py` — 70s R&B at 72 BPM, Cm7/Fm7/Bbmaj7/Ebmaj7 progression with sweet melody and high twinkle
+- `chuck_sync.py` — 120 BPM 8-bar riddim designed to lock with the ChucK jam transport
 
 ### Note 55 Warning
 Note 55 (Group B pad 5) may have a dub siren supertone assigned. Scripts avoid this note for bass/melody.
