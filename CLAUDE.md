@@ -53,6 +53,10 @@ Note 55 (Group B pad 5) may have a dub siren supertone assigned. Scripts avoid t
 
 All scripts use `rtmidi` directly. Ctrl+C to stop looping scripts.
 
+## Streaming
+
+See `STREAMING.md` for the live stereo route, Icecast mount, tmux sessions, verification commands, and beelink mix notes.
+
 ## Resources (saved HTML)
 
 Reference pages saved locally from the web:
