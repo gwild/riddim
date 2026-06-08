@@ -16,6 +16,7 @@ DEFAULT_GST_ROOT = Path("/tmp/gstreamer-osx/runtime")
 DEFAULT_PLUGIN_DIR = Path("/tmp/gstreamer-osx/minplugins")
 DEFAULT_MOUNT = "/riddim.mp3"
 DEFAULT_DEVICE = 84
+DEFAULT_INPUT_CHANNELS = 18
 DEFAULT_LEFT_CHANNEL = 7
 DEFAULT_RIGHT_CHANNEL = 8
 READ_SIZE = 8192
@@ -64,8 +65,7 @@ def select_matrix(input_channels, left_channel, right_channel):
     return "< " + ", ".join([row(left_channel), row(right_channel)]) + " >"
 
 
-def gst_cmd(root, device, left_channel, right_channel):
-    input_channels = 18
+def gst_cmd(root, device, input_channels, left_channel, right_channel):
     matrix = select_matrix(input_channels, left_channel, right_channel)
     return [
         str(root / "bin/gst-launch-1.0"),
@@ -100,7 +100,7 @@ def gst_cmd(root, device, left_channel, right_channel):
     ]
 
 
-def stream_once(env_path, gst_root, plugin_dir, device, left_channel, right_channel, mount):
+def stream_once(env_path, gst_root, plugin_dir, device, input_channels, left_channel, right_channel, mount):
     values = load_env(env_path)
     host = require(values, "LAN_ICECAST_HOST")
     port = int(require(values, "ICECAST_PORT"))
@@ -109,7 +109,7 @@ def stream_once(env_path, gst_root, plugin_dir, device, left_channel, right_chan
     mount = mount if mount.startswith("/") else f"/{mount}"
 
     proc = subprocess.Popen(
-        gst_cmd(gst_root, device, left_channel, right_channel),
+        gst_cmd(gst_root, device, input_channels, left_channel, right_channel),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         env=gst_env(gst_root, plugin_dir),
@@ -127,9 +127,12 @@ def stream_once(env_path, gst_root, plugin_dir, device, left_channel, right_chan
     conn.putheader("Ice-Genre", "riddim")
     conn.putheader("Ice-Public", "0")
     conn.endheaders()
+    if conn.sock is not None:
+        conn.sock.settimeout(None)
 
     print(
         f"Streaming AudioBox device {device} channels {left_channel}/{right_channel} "
+        f"from {input_channels} input channels "
         f"to http://{host}:{port}{mount}"
     )
     assert proc.stdout is not None
@@ -159,13 +162,14 @@ def main():
     gst_root = Path(os.environ.get("RHYTHM_GST_ROOT", DEFAULT_GST_ROOT))
     plugin_dir = Path(os.environ.get("RHYTHM_GST_PLUGIN_DIR", DEFAULT_PLUGIN_DIR))
     device = int(os.environ.get("RHYTHM_GST_DEVICE", DEFAULT_DEVICE))
+    input_channels = int(os.environ.get("RHYTHM_GST_INPUT_CHANNELS", DEFAULT_INPUT_CHANNELS))
     left_channel = int(os.environ.get("RHYTHM_GST_LEFT_CHANNEL", DEFAULT_LEFT_CHANNEL))
     right_channel = int(os.environ.get("RHYTHM_GST_RIGHT_CHANNEL", DEFAULT_RIGHT_CHANNEL))
     mount = os.environ.get("RHYTHM_MOUNT", DEFAULT_MOUNT)
 
     while True:
         try:
-            stream_once(env_path, gst_root, plugin_dir, device, left_channel, right_channel, mount)
+            stream_once(env_path, gst_root, plugin_dir, device, input_channels, left_channel, right_channel, mount)
         except KeyboardInterrupt:
             raise
         except Exception as exc:
